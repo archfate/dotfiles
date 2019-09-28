@@ -1,0 +1,50 @@
+#!/bin/bash
+
+clock() {
+    printf '%s\n' "$(date +"%H:%M %p ")"
+}
+
+music() {
+#    song=$(mpc -f "[[%artist% - ]%title%]|[%track%]" 2>/dev/null | awk "NR==1")
+    song_mpd=$(ncmpcpp 2>/dev/null --current-song="%a — %t « ")
+    song_cmus=$(cmus-remote -C 'format_print "%t - %a"')
+
+    if pgrep -x "cmus" > /dev/null;
+    then
+        printf '%s\n' "$song_cmus"
+    elif
+        pgrep -x "ncmpcpp" > /dev/null;
+    then
+        printf '%s\n' "$song_mpd"
+    else
+        printf '%s\n' "[off-air]"
+    fi
+}
+
+weather(){
+    showforecast=$(awk 'NR==1' "$HOME/.local/share/forecast_report")
+    printf '%s\n' "$showforecast"
+}
+
+volume() {
+    NOTMUTED=$(amixer -c 1 -M | head -5 | grep "\[on\]")
+    AUDIO=$(amixer -c 1 -M | head -5 | grep -o -m 1 -E "[[:digit:]]+%")
+
+    if [ -z "$NOTMUTED" ];
+    then
+        echo "🔇 muted "
+    else
+        case "$AUDIO" in
+            0%|[0-9]%) echo "🔊 $AUDIO " ;;
+            1?%|2?%|3?%) echo "🔊 $AUDIO " ;;
+            4?%|5?%|6?%) echo "🔊 $AUDIO " ;;
+            *) echo "🔊 $AUDIO " ;;
+        esac
+    fi
+}
+
+while true;
+do
+    xsetroot -name "$(clock)• $(music) • $(weather) • $(volume)"
+    sleep 1m;
+done &
