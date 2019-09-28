@@ -26,12 +26,12 @@ stow -vt ~ dotfiles
 * ~~i3gaps - Window Manager~~
 * ~~i3blocks - status bar~~
 * w3m - commandline browser
-*<del> qutebrowser - GUI Browser </del>
+* ~~qutebrowser - GUI Browser~~
 * Firefox - GUI Browser
 * neovim - text editor
 * Weechat - IRC Client
 * sxhkd - Keybinding
 * Fucking Fast File Manager
-* <del>RTV - Reddit Terminal View -TUI</del> (Note: use tuir which is fork version or RTV. only if API no longer works)
+* ~~RTV - Reddit Terminal View -TUI~~ (Note: use tuir which is fork version or RTV. only if API no longer works)
 
 
