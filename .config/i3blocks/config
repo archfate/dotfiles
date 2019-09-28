@@ -1,0 +1,45 @@
+command=$HOME/.scripts/i3blocks/$BLOCK_NAME
+separator_block_width=10
+markup=pango
+
+[volume]
+label=
+instance=Master
+interval=1
+signal=10
+#min_width=10
+
+#[arch-update]
+#command=arch-update
+#label=:
+#interval=once
+#markup=pango
+
+#[iface]
+#label=🌐
+##instance=wlan0
+#interval=10
+
+#[battery]
+#command=i3battery
+#interval=5
+
+[date]
+label=
+command=i3cal
+interval=3600
+
+#[date]
+#label=
+#command=date '+%d/%m/%Y'
+#interval=3600
+
+[time]
+label=
+command=date '+%H:%M:%S' # | sed 's/:/h/'
+interval=30
+
+#[wifi]
+#command=i3wifi
+#instance=wlp2s0
+#interval=10

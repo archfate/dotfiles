@@ -1,0 +1,28 @@
+#[Default Applications]
+#x-scheme-handler/magnet=torrent.desktop;
+#x-scheme-handler/mailto=mutt.desktop;
+#text/plain=vim.desktop;
+#application/pdf=zathura.desktop;
+#image/png=sxiv.desktop;
+#image/jpeg=sxiv.desktop;
+#image/gif=sxiv.desktop;
+#
+#[Added Associations]
+#application/x-shellscript=vim.desktop;
+#text/markdown=firefox.desktop;org.pwmt.zathura.desktop;
+#text/plain=vim.desktop;
+
+[Default Applications]
+x-scheme-handler/magnet=torrent.desktop;
+x-scheme-handler/mailto=mail.desktop;
+x-scheme-handler/http=userapp-Qutebrowser.desktop
+x-scheme-handler/https=userapp-Qutebrowser.desktop
+text/plain=text.desktop;
+text/x-shellscript=text.desktop;
+text/csv=csv.desktop;
+application/pdf=pdf.desktop;
+image/png=img.desktop;
+image/jpeg=img.desktop;
+image/gif=img.desktop;
+application/rss+xml=rss.desktop
+

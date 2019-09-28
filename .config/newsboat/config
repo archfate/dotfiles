@@ -1,0 +1,67 @@
+#show-read-feeds no
+auto-reload no
+#user-agent "Lynx/2.8.5rel.1 libwww-FM/2.14"
+user-agent "Liferea/1.4.14 (Linux; en_US.UTF8; http://liferea.sf.net/)"
+external-url-viewer "urlscan -dc -r 'linkhandler {}'"
+#external-url-viewer "linkhandler"
+bookmark-cmd "~/.scripts/newsbeuter_bookmarks_surfraw.sh"
+browser ~/.scripts/linkhandler
+bind-key j down
+bind-key k up
+bind-key j next articlelist
+bind-key k prev articlelist
+bind-key J next-feed articlelist
+bind-key K prev-feed articlelist
+bind-key G end
+bind-key g home
+bind-key d pagedown
+bind-key u pageup
+bind-key l open
+bind-key h quit
+bind-key a toggle-article-read
+bind-key n next-unread
+bind-key N prev-unread
+bind-key D pb-download
+bind-key U show-urls
+bind-key x pb-delete
+bind-key ^t next-unread
+
+#color listnormal cyan default
+#color listfocus black yellow standout bold
+#color listnormal_unread blue default
+#color listfocus_unread yellow default bold
+#color info red black bold
+#color article cyan default
+# Colorscheme (Behelit) -------------------------------------------------------
+color listnormal color83 color233
+color listfocus color235 color99 reverse bold
+color listnormal_unread color161 color233
+color listfocus_unread color235 color99 reverse bold
+color info color235 color99 reverse bold
+color background color83 color233
+color article color83 color233
+
+# Highlights ------------------------------------------------------------------
+highlight article "(^Feed:.*)" color240 color233
+highlight article "(^Title:.*|^Author:.*)" color161 color233
+highlight article "(^Link:.*)" color240 color233
+highlight article "(^Date:.*)" color161 color233
+highlight article     "^Podcast Download URL:.*"            color161 color233 
+highlight article     "^Links:"                             color161 color233
+highlight article     "\\[[0-9][0-9]*\\]"                   color83  color233
+highlight article     "\\[image [0-9][0-9]*\\]"             color83  color233
+highlight article     "\\[embedded flash: [0-9][0-9]*\\]"   color83  color233
+highlight article     ":.*\\(link\\)$"                      color83  color233
+highlight article     ":.*\\(image\\)$"                     color83  color233
+highlight article     ":.*\\(embedded flash\\)$"            color83  color233
+#browser linkhandler
+macro , open-in-browser
+macro t set browser "tsp youtube-dl --add-metadata -ic"; open-in-browser ; set browser linkhandler
+macro a set browser "tsp youtube-dl --add-metadata -xic -f bestaudio/best"; open-in-browser ; set browser linkhandler
+macro v set browser "setsid nohup mpv"; open-in-browser ; set browser linkhandler
+macro w set browser "w3m"; open-in-browser ; set browser linkhandler
+macro p set browser "dmenuhandler"; open-in-browser ; set browser linkhandler
+macro c set browser "xsel -b <<<" ; open-in-browser ; set browser linkandler
+macro f set browser "firefox" ; open-in-browser ; set browser linkhandler
+macro q set browser "qutebrowser" ; open-in-browser ; set browser linkhandler
+macro d set browser "dmenuhandler"; open-in-browser ; set browser linkhandler

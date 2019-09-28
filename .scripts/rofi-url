@@ -1,0 +1,49 @@
+#!/bin/bash
+# Feed this script a link and it will give rofi
+# some choice programs to use to open it.
+
+# Check for empty url
+if [ $# -eq 0 ]; then
+	url="$(rofi -dmenu -i -lines 0 -p "Url")"
+	[ -z "$url" ] && exit 1
+else
+	url="$@"
+fi
+
+# The URL will be shown visually in 30 characters or less.
+if [[ "${#url}" -gt 40 ]]; then
+	visual="${url:0:20}"..."${url: -20}"
+else
+	visual="$url"
+fi
+
+choice="$(echo -e "clipboard\nmpv\nmpv (float)\nmpv (loop)\nbrowser\nwget\nfeh\nw3m\nbt" | rofi -dmenu -i -p "'$visual'")"
+
+case "$choice" in
+	clipboard)
+		echo "$url" | xsel -bi &disown
+		;;
+	mpv)
+		mpv "$url"
+		;;
+	"mpv (float)")
+		mpv -c --geometry=-4-4 --autofit=30% --title=video-float "$url"
+		;;
+	"mpv (loop)")
+		mpv -c --loop "$url"
+		;;
+	wget)
+		wget -q "$url" &>/dev/null &disown
+		;;
+	browser)
+		$BROWSER "$url" &>/dev/null &disown
+		;;
+	feh)
+		feh "$url" &>/dev/null &disown
+		;;
+	w3m)
+		$term -e w3m "$url" &>/dev/null &disown
+		;;
+        bt)     transadd "$url" &>/dev/null &disown
+                ;;
+esac

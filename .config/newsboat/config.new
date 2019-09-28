@@ -1,0 +1,62 @@
+#show-read-feeds no
+#html-renderer "w3m -dump -T text/html/imange"
+
+external-url-viewer "urlscan -dc -r 'linkhandler {}'"
+
+bookmark-cmd "~/.scripts/newsbeuter_bookmarks_surfraw.sh"
+
+# Podboat Downloader
+download-path               "~/Downloads/PodCast/%n"
+max-downloads               2
+player                      "mpv"
+
+# KeyBinding
+bind-key j down
+bind-key k up
+bind-key j next articlelist
+bind-key k prev articlelist
+bind-key J next-feed articlelist
+bind-key K prev-feed articlelist
+bind-key G end
+bind-key g home
+bind-key d pagedown
+bind-key u pageup
+bind-key l open
+bind-key h quit
+bind-key a toggle-article-read
+bind-key n next-unread
+bind-key N prev-unread
+bind-key D pb-download
+bind-key U show-urls
+bind-key x pb-delete
+bind-key ^t next-unread
+
+# Colors
+color listnormal cyan default
+color listfocus black yellow standout bold
+color listnormal_unread blue default
+color listfocus_unread yellow default bold
+color info red black bold
+color article green default
+
+# Highlight Rules
+highlight feedlist "https?://[^ ]+" cyan default
+highlight feedlist "#[[:space:]].+$" blue default bold
+highlight articlelist "[[:digit:]]{4}-[[:digit:]]{2}-[[:digit:]]{2}" cyan default
+highlight article "https?://[^ ]+" cyan default
+highlight article "^(Feed|Title|Author|Link|Date):" blue default
+
+# Layout
+feedlist-format     "%4i %n %11u %t"
+articlelist-format  "%4i %f %D   %?T?|%-17T|  ?%t"
+notify-format       "%d new articles (%n unread articles, %f unread feeds)"
+
+browser linkhandler #$HOME/.scripts/urlportal
+macro , open-in-browser
+macro t set browser "tsp youtube-dl --add-metadata -ic"; open-in-browser ; set browser linkhandler
+macro a set browser "tsp youtube-dl --add-metadata -xic -f bestaudio/best"; open-in-browser ; set browser linkhandler
+macro r set browser "rtv -l %u"; open-in-browser ; set browser "$BROWSER %u"
+macro v set browser "setsid nohup mpv"; open-in-browser ; set browser linkhandler
+macro w set browser "w3m"; open-in-browser ; set browser linkhandler
+macro p set browser "dmenuhandler"; open-in-browser ; set browser linkhandler
+macro c set browser "xsel -b <<<" ; open-in-browser ; set browser linkhandler

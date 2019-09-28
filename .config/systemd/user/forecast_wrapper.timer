@@ -1,0 +1,12 @@
+[Unit]
+Description=Update forcast_report every 6 hours
+
+[Timer]
+OnCalendar=*-*-* 01:00:00
+OnCalendar=*-*-* 12:00:00
+Persistent=true
+AccuracySec=1m
+Unit=forecast_wrapper.service
+
+[Install]
+WantedBy=default.target

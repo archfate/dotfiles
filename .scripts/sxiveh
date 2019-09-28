@@ -1,0 +1,15 @@
+#!/usr/bin/bash
+
+case $@ in
+  http*://*)
+    folder="/tmp/$(date '+%Y%m%d%H%M%S%N')-sxevimages"
+    mkdir $folder
+    for url in $@; do
+      name="$folder/${url##*/}"
+      curl -L -o $name -s $url
+    done
+    sxiv -ba $folder/*
+    rm -r $folder
+    ;;
+  *) sxiv -b $@;;
+esac

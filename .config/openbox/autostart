@@ -1,0 +1,33 @@
+# Programs that will run after Openbox has started
+
+# Turn on Keyboard numlock
+numlockx &
+
+# Nitrogen is a lightweight desktop background manager
+nitrogen --restore &
+
+# Tint2 is a system panel/taskbar
+tint2 &
+
+# Compton is a standalone compositor for Xorg
+compton &
+
+# Start Rofi
+rofi -show run &
+
+#start Conky
+conky &
+
+# Fcitx support (for typing non-english characters)
+fcitx &
+
+# Redshift Night-light mode
+#redshift-gtk -l lat:lon &
+
+# Applets
+nm-applet --no-agent & 
+volumeicon &
+
+# Xautolock + i3lock as Screensaver
+#exec_always --no-startup-id xautolock -detectsleep -time 1 -locker "i3lock -n -c 48D884" -killtime 10 -killer "systemctl suspend" &
+xautolock -detectsleep -time 10 -locker "i3lock -n -c 48D884" -corners -0000 &

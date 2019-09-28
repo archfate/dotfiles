@@ -1,0 +1,29 @@
+super + shift + r
+        dwm_restart
+super + alt + control + {0-9}
+	mpc -q seek {0-9}0%
+super + shift + o
+        decode-pip
+super + shift + y 
+        clipmenu.sh 
+super + shift + d
+        clipdel -d ".*"
+super + w
+        firejail --apparmor qutebrowser --qt-flag disable-reading-from-canvas
+
+super + shift + f 
+        firefox
+
+## Volume/Audio control
+#
+#super + {equal, plus} 
+#        amixer -c 1 -q sset Master {5,15}%+      
+#super {_,shift +} + minus
+#        amixer -c 1 -q sset Master {5,15}%- 
+#super + shift + m
+#        pulsemixer --toggle-mute; 
+#
+#XF86Audio{Raise,Lower}Volume
+#        amixer -c 1 -q sset Master 5%{+,-}        
+#XF86AudioMute
+#        pulsemixer --toggle-mute 

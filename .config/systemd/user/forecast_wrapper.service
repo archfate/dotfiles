@@ -1,0 +1,10 @@
+[Unit]
+Description=forecast_wrapper
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/sh -c '%h/.scripts/dmenu-collection/forecast_wrapper'
+ExecStartPost=/usr/bin/sh -c 'notify-send "Forecast_report has been updated"'
+
+[Install]
+WantedBy=default.target

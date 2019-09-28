@@ -1,0 +1,62 @@
+# cd
+alias ..='cd ..'
+alias ...='cd ../..'
+alias ....='cd ../../..'
+
+
+# pacman
+alias pacu='sudo pacman -Syu'
+alias paci='sudo pacman -S'
+alias pacr='sudo pacman -Rs'
+alias pacrf='sudo pacman -Rns'
+alias pacs='pacman -Ss'
+
+# Adding color
+alias ls='ls -hN --color=auto --group-directories-first'
+alias ll='ls -l'
+alias la='ls -lah'
+
+#alias ls='ls --color=auto'
+alias grep="grep --color=auto" # Color grep - highlight desired sequence.
+#alias cat="highlight --out-format=ansi" # Color cat - print file with syntax highlighting.
+
+# Common Directory
+alias CODE='cd $HOME/Documents/Code'
+alias doc='cd $HOME/Documents/'
+alias dl='cd $HOME/Downloads/'
+alias gitlab='cd $HOME/gitlab'
+alias gitclone='cd $HOME/gitclone'
+
+# git
+alias gita='git add '
+alias gitc='git commit -m "$(date)"'
+alias gitp='git push'
+alias gitl='git log --graph --oneline --decorate'
+alias gits='git status'
+alias giti='echo; git log -n 12 --graph --oneline --decorate; echo; git status; echo'
+
+# youtube-dl
+alias ytf='youtube-dl -F'
+alias myt='mpv --ytdl-format=93 $(xclip -o);'
+alias mco='mpv $(xclip -o);'
+alias mca='mpv --video=no  $(xclip -o);'
+alias ytg='youtube-dl -f mp4 --verbose --external-downloader wget $(xclip -o);'
+# SINGLE AUDIO
+alias yta='youtube-dl -icvwxo "%(title)s.%(ext)s" --audio-format mp3 --audio-quality 0 --netrc "$(xclip -selection
+clipboard -o)"'
+# MULTIPLE AUDIOS (playlist)
+alias ytam='youtube-dl -icvwxo "%(playlist_index)s.%(title)s.%(ext)s" --playlist-reverse --audio-format mp3
+--audio-quality 0 --netrc "$(xclip -selection clipboard -o)"'
+# SINGLE AUDIO AND KEEP VIDEO
+alias ytak='youtube-dl -ickvwxo "%(title)s.%(ext)s" --audio-format mp3 --audio-quality 0 --netrc "$(xclip -selection
+clipboard -o)"'
+# SINGLE VIDEO
+alias ytv='youtube-dl -4icvwo "%(title)s.%(ext)s" --netrc "$(xclip -selection clipboard -o)"'
+# MULTIPLE VIDEOS (channel or playlist)
+alias ytvm='youtube-dl -icvwo "%(playlist_index)s.%(title)s.%(ext)s" --playlist-reverse --netrc "$(xclip -selection
+clipboard -o)"'
+
+# tmux
+alias tmuxks='tmux kill-server'
+
+
