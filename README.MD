@@ -10,7 +10,7 @@ mv .bashrc .bash_profile ~/dotfilesbackup
 * setup git dir & fork.
 ```
 mkdir -p ~/gitlab
-git clone https://github.com/archfate/dotfiles.git ~/gitlab/ 
+git clone https://github.com/archfate/dotfiles.git ~/gitlab/
 cd ~/gitlab
 ```
 * symlink with stow
@@ -26,6 +26,12 @@ stow -vt ~ dotfiles
 * ~~i3gaps - Window Manager~~
 * ~~i3blocks - status bar~~
 * w3m - commandline browser
-* qutebrowser - GUI Browser
+*<del> qutebrowser - GUI Browser </del>
+* Firefox - GUI Browser
 * neovim - text editor
+* Weechat - IRC Client
+* sxhkd - Keybinding
+* Fucking Fast File Manager
+* <del>RTV - Reddit Terminal View -TUI</del> (Note: use tuir which is fork version or RTV. only if API no longer works)
+
 
