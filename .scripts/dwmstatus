@@ -4,22 +4,6 @@ clock() {
     printf '%s\n' "$(date +"%H:%M %p ")"
 }
 
-#music() {
-##    song=$(mpc -f "[[%artist% - ]%title%]|[%track%]" 2>/dev/null | awk "NR==1")
-#    song_mpd=$(ncmpcpp 2>/dev/null --current-song="%a — %t « ")
-#    song_cmus=$(cmus-remote -C 'format_print "%t - %a"')
-#
-#    if pgrep -x "cmus" > /dev/null;
-#    then
-#        printf '%s\n' "$song_cmus"
-#    elif
-#        pgrep -x "ncmpcpp" > /dev/null;
-#    then
-#        printf '%s\n' "$song_mpd"
-#    else
-#        printf '%s\n' "꧁ღff-airღ꧂"
-#    fi
-#}
 music() {
     song_air=$(mpc status | grep -m1 "" | tr -d " ")
 
