@@ -1,15 +1,22 @@
 #!/usr/bin/env sh
-# using fifo to queue up videos to mpv play.
+# using fifo to queue up videos to mpv.
+set -e
 
+url=$(xsel -bo)
 videoQue=/tmp/mpvinput
-url=$(xclip -o -selection clipboard)
+sanitize="$(echo "$url" | sed 's/%3A/:/g;s/%2F/\//g')"
 
 # Make fifo path if not exist.
 [ ! -p "$videoQue" ] && mkfifo "$videoQue"
 
-if pgrep -f "${videoQue}" > /dev/null; then
-    printf "%s\n" "loadfile \"${url}\" append-play" > $videoQue
-else
-   setsid mpv --input-file="${videoQue}" "${url}" > /dev/null 2>&1 &
-fi
-exit 0
+case "$url" in
+  *%2F*)
+     setsid mpv --input-file="${videoQue}" "${sanitize}" > /dev/null 2>&1 & ;;
+  *)
+    if pgrep -f "${videoQue}" > /dev/null; then
+      printf "%s\n" "loadfile \"${url}\" append-play" > $videoQue
+    else
+      setsid mpv --input-file="${videoQue}" "${url}" > /dev/null 2>&1 & fi ;;
+esac
+exit 1
+# vim:set ts=2 sw=2 et:
