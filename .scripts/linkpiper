@@ -4,8 +4,8 @@ set -e
 
 url=$(xsel -bo)
 videoQue=/tmp/mpvinput
-sanitize="$(echo "$url" | sed 's/%3A/:/g;s/%2F/\//g')"
-
+#sanitize="$(echo "$url" | awk_urldecode)"
+#sanitize="$(echo "$url" | sed 's/%3A/:/g;s/%2F/\//g')"
 # Make fifo path if not exist.
 [ ! -p "$videoQue" ] && mkfifo "$videoQue"
 
