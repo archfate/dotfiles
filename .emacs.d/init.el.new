@@ -1,0 +1,248 @@
+;; .emacs.d/init.el
+
+;; ===================================
+;; MELPA Package Support
+;; ===================================
+
+;; Enables basic packaging support
+
+(require 'package)
+
+
+;; Adds the Melpa archive to the list of available repositories
+
+(add-to-list 'package-archives
+
+             '("melpa" . "http://melpa.org/packages/") t)
+
+
+;; Initializes the package infrastructure
+
+(package-initialize)
+
+
+;; If there are no archived package contents, refresh them
+
+(when (not package-archive-contents)
+
+  (package-refresh-contents))
+
+
+;; Installs packages
+
+;;
+
+;; myPackages contains a list of package names
+
+(defvar myPackages
+
+  '(better-defaults                 ;; Set up some better Emacs defaults
+    elpy
+    flycheck
+    py-autopep8
+    blacken
+    material-theme                  ;; Theme
+
+    )
+
+  )
+
+
+;; Scans the list in myPackages
+
+;; If the package listed is not already installed, install it
+
+(mapc #'(lambda (package)
+
+          (unless (package-installed-p package)
+
+            (package-install package)))
+
+      myPackages)
+
+;; ===================================
+;; Key Bindings
+;; ===================================
+
+;; Edit emacs init.el
+(defun open-init-file ()
+  (interactive)
+  (find-file "~/.emacs.d/init.el"))
+(global-set-key (kbd "<f2>") 'open-init-file)
+
+;; ===================================
+;; Basic Customization
+;; ===================================
+
+
+(setq inhibit-startup-message t)    ;; Hide the startup message
+
+(load-theme 'material t)            ;; Load material theme
+
+(global-linum-mode t)               ;; Enable line numbers globally
+(setq org-src-tab-acts-natively t)  ;; Indentation for org-mode code block
+
+(add-hook 'after-init-hook 'global-company-mode) ;; Company-mode for all buffers.
+
+;; ==================================
+;; Python Header
+;; ==================================
+(defun my-insert-header ()
+  "Asks for file name, date, description, ... and insert at point."
+  (interactive)
+  (setq cur-file (read-from-minibuffer "file name ? " 
+                   (file-name-nondirectory (buffer-file-name))))
+  (setq cur-date (org-read-date))
+  (setq cur-author "Me")
+  (setq cur-description (read-from-minibuffer "description ? "))
+  (insert (format "# File: %s \n" cur-file))
+  (insert (format "# Date : %s \n" cur-date))
+  (insert (format "# Description : %s \n" cur-description))
+)
+;; ==================================
+;; Backups and History
+;; ==================================
+(setq backup-directory-alist '(("." . "~/.emacs.d/backups"))) ;; points all backups to one directory to free up ~ cluster.
+
+;; pile of save files
+(setq delete-old-versions -1)
+(setq version-control t)
+(setq vc-make-backup-files t)
+(setq auto-save-file-name-transforms '((".*" "~/.emacs.d/auto-save-list/" t)))
+
+;; save history
+(setq savehist-file "~/.emacs.d/savehist")
+(savehist-mode 1)
+(setq history-length t)
+(setq history-delete-duplicates t)
+(setq savehist-save-minibuffer-history 1)
+(setq savehist-additional-variables
+      '(kill-ring
+        search-ring
+        regexp-search-ring))
+;; ====================================
+;; Load File
+;; ====================================
+;; Org-Mode
+;; ====================================
+
+;; org-mode export markdown
+(eval-after-load "org"
+  '(require 'ox-md nil t))
+(setq org-html-validation-link nil)
+
+(org-babel-do-load-languages			;; Run code in org-mode blocks
+ 'org-babel-load-languages
+ '((python . t)))
+
+(setq org-export-with-section-numbers nil) ;; remove number heading from export.
+
+;; set maximum indentation for description lists
+(setq org-list-description-max-indent 5)
+
+;; prevent demoting heading also shifting text inside sections
+(setq org-adapt-indentation nil)
+
+;; ====================================
+;; Journal
+;; ====================================
+(defun org-journal-file-header-func ()
+  "Custom function to create journal header."
+  (concat
+    (pcase org-journal-file-type
+      (`daily "#+TITLE: Daily Journal\n#+STARTUP: showeverything")
+      (`weekly "#+TITLE: Weekly Journal\n#+STARTUP: folded")
+      (`monthly "#+TITLE: Monthly Journal\n#+STARTUP: folded")
+      (`yearly "#+TITLE: Yearly Journal\n#+STARTUP: folded"))))
+
+(setq org-journal-file-header 'org-journal-file-header-func)
+(customize-set-variable 'org-journal-dir "~/orgFiles/Journal")
+(customize-set-variable 'org-journal-date-format "%A, %d %B %Y")
+(require 'org-journal)    
+
+;; =========================================
+;; Org Capture Mode
+;; =========================================
+(define-key global-map "\C-cc" 'org-capture)
+(setq org-capture-templates
+  '(    ;; ... other templates
+
+    ("j" "Journal Entry"
+     entry (file "~/orgFiles/Journal/journal.org")
+     "* %<%A, %d %B %Y> %?\n** %<%H:%m>\n%i "
+     :empty-lines 1)
+        ;; ... other templates
+    ))
+;; ====================================
+;; Open files externally
+;; ====================================
+
+(defun prelude-open-with (arg)
+  "Open visited file in default external program.
+
+With a prefix ARG always prompt for command to use."
+  (interactive "P")
+  (when buffer-file-name
+    (shell-command (concat
+                    (cond
+                     ((and (not arg) (eq system-type 'darwin)) "open")
+                     ((and (not arg) (member system-type '(gnu gnu/linux gnu/kfreebsd))) "xdg-open")
+                     (t (read-shell-command "Open current file with: ")))
+                    " "
+                    (shell-quote-argument buffer-file-name)))))
+;; ====================================
+;; Key and other features
+;; ====================================
+
+;; Enable Xclip Clipboard back to back
+;; use xclip to copy/paste in emacs-nox
+(unless window-system
+  (when (getenv "DISPLAY")
+    (defun xclip-cut-function (text &optional push)
+      (with-temp-buffer
+	(insert text)
+	(call-process-region (point-min) (point-max) "xclip" nil 0 nil "-i" "-selection" "clipboard")))
+    (defun xclip-paste-function()
+      (let ((xclip-output (shell-command-to-string "xclip -o -selection clipboard")))
+	(unless (string= (car kill-ring) xclip-output)
+	  xclip-output )))
+    (setq interprogram-cut-function 'xclip-cut-function)
+    (setq interprogram-paste-function 'xclip-paste-function)
+    ))
+;; ====================================
+;; Development Setup
+;; ====================================
+
+;; Enable elpy
+
+(elpy-enable)
+
+
+;; Enable Flycheck
+
+(when (require 'flycheck nil t)
+  (setq elpy-modules (delq 'elpy-module-flymake elpy-modules))
+  (add-hook 'elpy-mode-hook 'flycheck-mode))
+
+
+;; Enable autopep8
+
+(require 'py-autopep8)
+(add-hook 'elpy-mode-hook 'py-autopep8-enable-on-save)
+
+;; User-Defined init.el ends here
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(package-selected-packages
+   (quote
+    (org-journal htmlize flymd xclip material-theme blacken py-autopep8 flycheck elpy better-defaults))))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
+(put 'upcase-region 'disabled nil)
