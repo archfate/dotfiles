@@ -80,17 +80,56 @@
 
 (load-theme 'material t)            ;; Load material theme
 
-(global-linum-mode t)               ;; Enable line numbers globally
-(tool-bar-mode 0)	    ;; turn off toolbar
-(electric-indent-mode 0)
+;; (global-linum-mode t)               ;; Enable line numbers globally
+;; (tool-bar-mode 0)	    ;; turn off toolbar
+;; (electric-indent-mode 0)
+;; (menu-bar-mode 0)
+
+;; turn off bars
+(when (functionp 'menu-bar-mode)
+  (menu-bar-mode -1))
+(when (functionp 'set-scroll-bar-mode)
+  (set-scroll-bar-mode 'nil))
+(when (functionp 'mouse-wheel-mode)
+  (mouse-wheel-mode -1))
+(when (functionp 'tooltip-mode)
+  (tooltip-mode -1))
+(when (functionp 'tool-bar-mode)
+  (tool-bar-mode -1))
+(when (functionp 'blink-cursor-mode)
+  (blink-cursor-mode -1))
+
+;; Display line and column numbers
+(line-number-mode 1)
+(column-number-mode 1)
+
+;; Visualize current line motion
+(setq line-move-visual t)
+
+;; New line provision at end of files.
+(setq require-final-newline t)
+
+;; never kill scratchpad.
+(defadvice kill-buffer (around kill-buffer-around-advice activate)
+  (let ((buffer-to-kill (ad-get-arg 0)))
+    (if (equal buffer-to-kill "*scratch*")
+        (bury-buffer)
+      ad-do-it)))
+
+
+;; file names case insenstive
+(setq read-file-name-completion-ignore-case t)
+
+;; yes and no too hard to type y and n instead.
+(defalias 'yes-or-no-p 'y-or-n-p)
 
 (add-hook 'after-init-hook 'global-company-mode) ;; Company-mode for all buffers.
 
 (setq-default fill-column 79                    ; Maximum line width
               truncate-lines t                  ; Don't fold lines
               indent-tabs-mode nil              ; Use spaces instead of tabs
-             ;; split-width-threshold 160         ; Split verticly by default
-             ;; split-height-threshold nil        ; Split verticly by default
+              ;; split-width-threshold 0           ; Split verticly by default
+              ;; split-height-threshold nil        ; Split verticly by default
               auto-fill-function 'do-auto-fill) ; Auto-fill-mode everywhere
 (set-language-environment "UTF-8")              ; Set UTF8 coding system
 (add-hook 'comint-mode-hook (lambda () (local-set-key (kbd "C-l")
@@ -129,10 +168,8 @@
 ;; =================================
 ;; Org-Mode
 ;; =================================
-(require 'org-protocol)
-
 ;; org-protocol
-(global-set-key "\C-cl" 'org-store-link)
+
 
 ;; Activate indent-mode
 (add-hook 'org-mode-hook
@@ -144,11 +181,33 @@
   '(require 'ox-md nil t))
 (setq org-html-validation-link nil)
 
-(org-babel-do-load-languages			;; Run code in org-mode blocks
- 'org-babel-load-languages
- '((python . t)))
+;; (org-babel-do-load-languages			;; Run code in org-mode blocks
+;;  'org-babel-load-languages
+;;  '((python . t)))
 
+;; =================================
+;; Org Babel
+;; =================================
+(org-babel-do-load-languages
+ (quote org-babel-load-languages)
+ (quote ((emacs-lisp . t)
+         (dot . t)
+         (ditaa . t)
+         (R . t)
+         (python . t)
+         (ruby . t)
+         (gnuplot . t)
+         (clojure . t)
+         (org . t)
+         (plantuml . t)
+         (latex . t))))
+;; ======================================
+
+;; Setup Org-Protocol to associate with Emacs server start.
+(server-start)
+(require 'org-protocol)
 (setq org-export-with-section-numbers nil) ;; remove number heading from export.
+(global-set-key "\C-cl" 'org-store-link)
 
 ;; set maximum indentation for description lists
 (setq org-list-description-max-indent 5)
@@ -209,6 +268,15 @@
 (setq org-default-notes-file "~/org/refile.org")
 ;; C-c c to start capture mode
 (global-set-key (kbd "C-c c") 'org-capture)
+
+(setq org-tag-persistent-alist
+        '(("PROJECT" . ?p)
+          ("FLAGGED" . ?f)
+          ("@Office" . ?o)
+          ("@Home" . ?h)
+          ("@Computer" . ?c)
+          ("@Errands" . ?e)
+          ("@Lunchtime" . ?l)))
 ;; Capture templates for: TODO tasks, Notes, appointments, phone calls, meetings, and org-protocol
 (setq org-capture-templates
       (quote (("t" "todo" entry (file "~/org/refile.org")
@@ -216,13 +284,15 @@
               ("r" "respond" entry (file "~/org/refile.org")
                "* NEXT Respond to %:from on %:subject\nSCHEDULED: %t\n%U\n%a\n"
                :clock-in t :clock-resume t :immediate-finish t)
-              ("b" "Book" entry (file "~/org/refile.org")
-               "* %^{TITLE}\n:PROPERTIES:\n:ADDED: %<[%Y-%02m-%02d]>\n:END:%^{AUTHOR}p\n%?" :empty-lines 1)
+              ("b" "Books" entry (file "~/org/refile.org")
+               "** TODO %?\nScheduled: %(format-time-string
+\"%<<%Y-%m-%d %a .+1d>>\")\n:PROPERTIES:\n:ADDED: %<[%Y-%02m-%02d]>\n:END:" :empty-lines 1)
               ("n" "note" entry (file "~/org/refile.org")
                "* %? :NOTE:\n%U\n%a\n" :clock-in t :clock-resume t)
               ("j" "Journal" entry (file+datetree "~/org/diary.org")
                "* %<%A, %d %B %Y>\n** %<%H:%m> %?\n%U\n" :clock-in t :clock-resume t)
               ("w" "org-protocol" entry (file "~/org/refile.org")
+               ;; "* %a :website:\n\n%U %?\n\n%:initial")
                "* TODO Review %c\n%U\n" :immediate-finish t)
               ("m" "Meeting" entry (file "~/org/refile.org")
                "* MEETING with %? :MEETING:\n%U" :clock-in t :clock-resume t)
@@ -234,6 +304,33 @@
 NEXT\n:END:\n")
               ("e" "Movie" entry (file+headline "~/org/watch-list.org" "Entertainments")
                "* %?\n Watched on %T %i" :empty-lines-before 1 :empty-lines-after 1))))
+
+
+(setq org-refile-targets (quote ((nil :maxlevel . 9)
+                                 (org-agenda-files :maxlevel . 9))))
+
+
+;; ==================================
+;; Youdao dictionary
+;; ==================================
+;; Enable Cache
+(setq url-automatic-caching t)
+
+;; Example Key binding
+(global-set-key (kbd "C-c y") 'youdao-dictionary-search-at-point)
+
+;; Lookup difinition at point with mw-thesaurus
+(global-set-key (kbd "<f8>") 'mw-thesaurus-lookup-at-point)
+
+;; lookup sentence structure for word
+(autoload 'ispell-get-word "ispell")
+
+(defun lookup-word (word)
+  (interactive (list (save-excursion (car (ispell-get-word nil)))))
+  ;; (browse-url (format "http://en.wiktionary.org/wiki/%s" word)))
+  (eww-browse-url (format "https://sentence.yourdictionary.com/%s" word)))
+
+(global-set-key (kbd "<f7>") 'lookup-word) 
 ;; ==================================
 ;; Python Header
 ;; ==================================
@@ -298,8 +395,7 @@ With a prefix ARG always prompt for command to use."
 (unless window-system
   (when (getenv "DISPLAY")
     (defun xclip-cut-function (text &optional push)
-      (with-temp-buffer
-	(insert text)
+      (with-temp-buffer	(insert text)
 	(call-process-region (point-min) (point-max) "xclip" nil 0 nil "-i" "-selection" "clipboard")))
     (defun xclip-paste-function()
       (let ((xclip-output (shell-command-to-string "xclip -o -selection clipboard")))
@@ -333,9 +429,13 @@ With a prefix ARG always prompt for command to use."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(custom-enabled-themes (quote (material)))
+ '(custom-safe-themes
+   (quote
+    ("a24c5b3c12d147da6cef80938dca1223b7c7f70f2f382b26308eba014dc4833a" default)))
  '(package-selected-packages
    (quote
-    (material-theme py-autopep8 flycheck elpy better-defaults))))
+    (mw-thesaurus youdao-dictionary pdf-tools material-theme py-autopep8 flycheck elpy better-defaults))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
