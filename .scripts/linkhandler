@@ -11,21 +11,26 @@ videoQue=/tmp/mpvinput
 [ -z "$1" ] && { "$BROWSER"; exit; }
 
 case "$1" in
-	*mkv|*webm|*mp4|*erome.com/*|*bitchute.com/*|*twitter.com/* \
+    *mkv|*webm|*mp4|*erome.com/*|*bitchute.com/*|*twitter.com/* \
         |*hooktube.com*|*youtube.com/*|*youtu.be/*|*invidio.us/*)
-        [ ! -p "$videoQue" ] && mkfifo "$videoQue"
-        if pgrep -f "${videoQue}" > /dev/null; then
-            printf "%s\n" "loadfile \"${1}\" append-play" > $videoQue
-        else
-            setsid mpv --input-file="${videoQue}" "${1}" > /dev/null 2>&1 & fi ;;
-    *.png|*.jpg|*.jpe|*.jpeg|*.gif)
-		curl -sL "$1" > "/tmp/$(echo "$1" | sed "s/.*\///")" \
+           setsid pueue add -- mpv --input-file="${videoQue}" "${1}" \
+                > /dev/null 2>&1 & ;;
+#            [ ! -p "$videoQue" ] && mkfifo "$videoQue"
+#            if pgrep -f "${videoQue}" > /dev/null; then
+#                printf "%s\n" "loadfile \"${1}\" append-play" > $videoQue
+#            else
+            #setsid mpv --input-ipc-server=/tmp/mpvsoc$(date +%s) -quiet "$1" >/dev/null 2>&1 & ;;
+    *.png|*.jpg|*.jpe|*.jpeg|*.gif|*gfycat.com/*)
+        curl -sL "$1" > "/tmp/$(echo "$1" | sed "s/.*\///")" \
             && sxiv -a "/tmp/$(echo "$1" | sed "s/.*\///")"  >/dev/null 2>&1 & ;;
     *mp3|*flac|*opus|*mp3?source*)
-		setsid tsp curl -LO "$1" >/dev/null 2>&1 & ;;
+        setsid tsp curl -LO "$1" >/dev/null 2>&1 & ;;
     magnet:*|*.torrent)
         transadd "$1" ;;
-	*)
-		if [ -f "$1" ]; then "$TERMINAL" -e "$EDITOR $1"
-		else setsid "$BROWSER" "$1" >/dev/null 2>&1 & fi ;;
+    *reddit.com/*)
+        st -e rtv -l "$1" >/dev/null 2>&1 & ;;
+    *)
+        if [ -f "$1" ]; then "$TERMINAL" -e "$EDITOR $1"
+        else setsid "$BROWSER" "$1" >/dev/null 2>&1 & fi ;;
 esac
+exit 0

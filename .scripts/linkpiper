@@ -1,22 +1,32 @@
 #!/usr/bin/env sh
-# using fifo to queue up videos to mpv.
-set -e
 
-url=$(xsel -bo)
-videoQue=/tmp/mpvinput
-#sanitize="$(echo "$url" | awk_urldecode)"
-#sanitize="$(echo "$url" | sed 's/%3A/:/g;s/%2F/\//g')"
-# Make fifo path if not exist.
-[ ! -p "$videoQue" ] && mkfifo "$videoQue"
+url=$(xsel -ob)
+
+#case "$url" in
+#    http*) tsp mpv \
+#        --ontop --no-border \
+#        --force-window \
+#        --autofit=500x280 \
+#        --geometry=-15-53 \
+#        "${url}" ;;
+#      *)
+#          ;;
+#esac
+[ -z "$url" ] && { "$BROWSER"; exit; }
 
 case "$url" in
-  *%2F*)
-     setsid mpv --input-file="${videoQue}" "${sanitize}" > /dev/null 2>&1 & ;;
-  *)
-    if pgrep -f "${videoQue}" > /dev/null; then
-      printf "%s\n" "loadfile \"${url}\" append-play" > $videoQue
-    else
-      setsid mpv --input-file="${videoQue}" "${url}" > /dev/null 2>&1 & fi ;;
+	*mkv|*webm|*mp4|*m3u8|*youtube.com/*|*playlist*\
+        |*youtu.be/*|*hooktube.com*|*watch*|*video*|*sendvid*\
+        |*bitchute.com*|*bilibili.com/*|*animeone.me*\
+        |*ixigua.com/*)
+		setsid pueue add -- mpv --input-ipc-server=/tmp/mpvsoc$(date +%s) -quiet \
+            "$url" >/dev/null 2>&1 & ;;
+	*png|*jpg|*jpe|*jpeg|*gif)
+		curl -sL "$url" > "/tmp/$(echo "$url" | sed "s/.*\///")" && sxiv -a "/tmp/$(echo "$url" | sed "s/.*\///")"  >/dev/null 2>&1 & ;;
+	*mp3|*flac|*opus|*mp3?source*)
+		setsid tsp curl -LO "$url" >/dev/null 2>&1 & ;;
+	*)
+		if [ -f "$url" ]; then "$TERMINAL" -e "$EDITOR $url"
+		else setsid $BROWSER "$url" >/dev/null 2>&1 & fi ;;
 esac
-exit 1
-# vim:set ts=2 sw=2 et:
+exit 0
